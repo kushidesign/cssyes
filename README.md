@@ -1,6 +1,6 @@
 # cssyes
 
-**Makes CSS nicer to read in terminal environments.**  
+**Makes CSS nicer to look at in terminal environments.**  
 <sub>Works with Clojure, ClojureScript(Node), Babashka, and Jolt</sub>
 
 <br>
