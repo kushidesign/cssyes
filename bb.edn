@@ -1,0 +1,68 @@
+{:paths
+ ["src" "." "bb"]
+
+ ;; this makes sure the test runner is available if you jack-in with Babashka
+ ;; so you can eval code in the test namespaces:
+ :deps
+ {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}
+  io.github.babashka/deps-deploy       {:mvn/version "0.0.1"}}
+
+ :min-bb-version
+ "1.13.222"
+
+ :tasks
+ {:requires
+  [build
+   [tasks.docs :as docs]]
+
+  test
+  {:doc  "Run the test suite."
+   :task (clojure "-M:test" "-m" "cognitect.test-runner")}
+
+  test:bb
+  {:doc         "Run the test suite using Babashka to check compatibility."
+   :extra-paths ["test"]
+   :task        (exec 'cognitect.test-runner.api/test)}
+
+  visual
+  {:doc         "Print the example CSS in each preset theme."
+   :extra-paths ["test"]
+   :requires    ([cssyes.visual :as visual])
+   :task        (visual/-main)}
+
+  test:jolt
+  {:doc  "Run the test suite using Jolt."
+   :task (shell "jolt" "-M:jolt-test")}
+
+  test:cljs
+  {:doc  "Run the test suite in ClojureScript, with shadow-cljs and karma."
+   :task (shell "npm" "test")}
+
+  test:all
+  {:doc     "Run the test suite for all target platforms."
+   :depends [test test:bb test:jolt test:cljs]}
+
+  ci
+  {:doc     "Run the CI pipeline of tests and build the JAR."
+   :depends [test:all] ; or just test
+   :exec-fn build/jar}
+
+  ci:deploy
+  {:doc     "Run the CI pipeline and deploy the JAR."
+   :depends [ci]
+   :exec-fn build/deploy}
+
+  install
+  {:doc     "Install the JAR locally (run `bb ci` first)."
+   :exec-fn build/install}
+
+  ;; Docs
+  ;; ---------------------------------------------------------------------------
+  docs:readme
+  {:doc  "Update the version numbers in README.md to match the latest tag (v0.2.0 -> 0.2.0). Leaves README.md alone if there are no tags yet."
+   :task (docs/update-readme)}
+
+  docs:git-deps
+  {:doc  "Regenerate doc/git-deps.md from the latest tag.
+          Uses HEAD if there are no tags yet."
+   :task (docs/write-git-deps "doc/git-deps.md")}}}
