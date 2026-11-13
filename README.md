@@ -174,23 +174,35 @@ Both use medium-tone colors that read on light and dark backgrounds.
 
 ## Developing
 
-```
-bb test       # Clojure tests
-bb test:bb    # Babashka tests
-bb test:jolt  # Jolt tests
-bb test:cljs  # ClojureScript tests (run npm install first)
-bb test:all   # All of the above
-bb visual     # Print sample CSS in each preset theme
-```
+Available dev tasks via `bb.edn`:
 
-### Docs
-
-```
+```sh
+bb test            # Clojure tests
+bb test:bb         # Babashka tests
+bb test:jolt       # Jolt tests
+bb test:cljs       # ClojureScript tests (run npm install first)
+bb test:all        # all of the above
+bb visual          # print sample CSS in each preset theme
+bb ci              # run the tests and build the jar
+bb install         # install the jar to ~/.m2
 bb docs:readme     # after tagging a release: update the version numbers in this README
 bb docs:git-deps   # after tagging a release: regenerate doc/git-deps.md
 ```
 
-`bb docs:git-deps` fills in [bb/tasks/git-deps.template.md](bb/tasks/git-deps.template.md) with the tag and its commit SHA. Commit the regenerated `doc/git-deps.md`.
+### Updating docs after a release
+
+After tagging a release (for example `git tag v0.2.0`), run both docs tasks:
+
+- `bb docs:readme` updates the version numbers in the Setup section of this README to match the tag.
+- `bb docs:git-deps` regenerates [doc/git-deps.md](doc/git-deps.md) from [bb/tasks/git-deps.template.md](bb/tasks/git-deps.template.md) with the tag and its commit SHA.
+
+Commit both files and push.
+
+<br>
+
+## Contributing
+
+Issues for bugs, improvements, or features are very welcome. Please file an issue for discussion before starting or issuing a PR.
 
 <br>
 
