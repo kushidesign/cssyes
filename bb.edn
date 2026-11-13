@@ -48,13 +48,22 @@
    :exec-fn build/jar}
 
   ci:deploy
-  {:doc     "Run the CI pipeline and deploy the JAR."
-   :depends [ci]
-   :exec-fn build/deploy}
+  {:doc     "Run the tests, then build and deploy the JAR to Clojars."
+   :depends [test:all]
+   :task    (run 'deploy)}
+
+  deploy
+  {:doc      "Build the JAR and deploy it to Clojars. Requires CLOJARS_USERNAME and CLOJARS_PASSWORD (a deploy token) in the environment, or a with-clojars-creds command on your PATH that supplies them."
+   :requires ([babashka.fs :as fs])
+   :task     (do (exec 'build/jar)
+                 (if (fs/which "with-clojars-creds")
+                   (shell "with-clojars-creds" "bb" "-x" "build/deploy")
+                   (exec 'build/deploy)))}
 
   install
-  {:doc     "Install the JAR locally (run `bb ci` first)."
-   :exec-fn build/install}
+  {:doc     "Install the JAR locally (build via ci)."
+   :depends [ci]
+   :task    (exec 'build/install)}
 
   ;; Docs
   ;; ---------------------------------------------------------------------------

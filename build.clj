@@ -21,7 +21,7 @@
    [:scm
     [:url "https://github.com/kushidesign/cssyes"]
     [:connection "scm:git:https://github.com/kushidesign/cssyes.git"]
-    [:developerConnection "scm:git:ssh:git@github.com:design.kushi/cssyes.git"]
+    [:developerConnection "scm:git:ssh:git@github.com:kushidesign/cssyes.git"]
     [:tag (str "v" version)]]])
 
 (defn- jar-opts [opts]
