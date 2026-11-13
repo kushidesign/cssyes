@@ -81,7 +81,7 @@ Using a tool without Maven support? See
 
 ## Usage
 
-`beautify` expects a string of valid CSS and returns a formatted string, tagged with ANSI SGR codes. The SGR codes will activate syntax highlighting in terminal/console environments.
+`cssyes.core/beautify` expects a string of valid CSS and returns a formatted string, tagged with ANSI SGR codes. The SGR codes will activate syntax highlighting in terminal/console environments.
 
 ```clojure
 (beautify ".btn{color:red;background-color:blue;&:hover{color:gold;}}")
@@ -144,9 +144,10 @@ Both use medium-tone colors that read on light and dark backgrounds.
 | `:semi-colons`    | `;`                                            |
 | `:comments`       | `/* ... */`                                    |
 
+
 ### Theme colors
 
-`:red` `:orange` `:yellow` `:olive` `:green` `:cyan` `:blue` `:purple` `:magenta` `:gray` `:black` `:white`
+`:red`<br>`:orange`<br>`:yellow`<br>`:olive`<br>`:green`<br>`:cyan`<br>`:blue`<br>`:purple`<br>`:magenta`<br>`:gray`<br>`:black`<br>`:white`
 
 `:neutral`, or a missing token, prints uncolored.
 
