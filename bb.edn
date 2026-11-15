@@ -5,7 +5,9 @@
  ;; so you can eval code in the test namespaces:
  :deps
  {io.github.cognitect-labs/test-runner {:git/tag "v0.5.1" :git/sha "dfb30dd"}
-  io.github.babashka/deps-deploy       {:mvn/version "0.0.1"}}
+  io.github.babashka/deps-deploy       {:mvn/version "0.0.1"}
+  ;; The local checkout. Switch to {:mvn/version "0.1.0"} once sugar is published.
+  io.github.paintparty/sugar           {:local/root "../../claude/sugar"}}
 
  :min-bb-version
  "1.13.222"
@@ -24,8 +26,8 @@
    :extra-paths ["test"]
    :task        (exec 'cognitect.test-runner.api/test)}
 
-  visual
-  {:doc         "Print the example CSS in each preset theme."
+  test:visual
+  {:doc         "Print the example CSS in each preset theme, and in monokai-universal with each color variant."
    :extra-paths ["test"]
    :requires    ([cssyes.visual :as visual])
    :task        (visual/-main)}
@@ -35,7 +37,7 @@
    :task (shell "jolt" "-M:jolt-test")}
 
   test:cljs
-  {:doc  "Run the test suite in ClojureScript, with shadow-cljs and karma."
+  {:doc  "Run the test suite in ClojureScript on Node, with shadow-cljs."
    :task (shell "npm" "test")}
 
   test:all

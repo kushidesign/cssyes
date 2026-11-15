@@ -1,5 +1,10 @@
-{:source-paths ["src/" "test/"]
- :builds       {:test {:target    :karma
-                       :output-to "out/test.js"
+{:source-paths ["src/" "test/"
+                ;; sugar and its supports-color dep come from the local
+                ;; checkouts until sugar is published.
+                "../../claude/sugar/src"
+                "../../cljc/supports-color/src"]
+ :dependencies [[io.github.paintparty/js-runtime-detection "0.1.0-SNAPSHOT"]]
+ :builds       {:test {:target    :node-test
+                       :output-to "out/test/node-tests.js"
                        :ns-regexp "-test$"
-                       :autorun   true}}}
+                       :autorun   false}}}

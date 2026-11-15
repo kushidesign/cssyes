@@ -102,16 +102,18 @@ Output (without color):
 
 ```clojure
 (print-css ".foo{color:red;}")
-(print-css ".foo{color:red;}" {:theme cssyes.themes/neutral-universal})
+(print-css ".foo{color:red;}" {:theme cssyes.themes/monokai-universal})
 ```
 
 ### Options
 
-| Key              | Default                              | Description                              |
-| :---             | :---                                 | :---                                     |
-| `:theme`         | `cssyes.themes/monokai-universal`    | Map of token to color                    |
-| `:indentation`   | `2`                                  | Spaces per nesting level                 |
-| `:align-values?` | `true`                               | Align (left-justify) values within a block              |
+| Key               | Default                 | Description                                                                              |
+| :---              | :---                    | :---                                                                                     |
+| `:theme`          | `cssyes.themes/neutral` | Map of token to color                                                                    |
+| `:color-variant`  | `nil`                   | Use one variant for every base color in the theme. See [Color variants](#color-variants) |
+| `:indentation`    | `2`                     | Spaces per nesting level                                                                 |
+| `:align-values?`  | `true`                  | Align (left-justify) values within a block                                               |
+| `:supports-color` | `nil`                   | A supports-color `:context` map, for mocking the terminal in tests                       |
 
 <br>
 
@@ -119,10 +121,10 @@ Output (without color):
 
 Presets in `cssyes.themes`:
 
+- `neutral`, the default. Colors only punctuation and comments, in gray.
 - `monokai-universal`
-- `neutral-universal`
 
-Both use medium-tone colors that read on light and dark backgrounds.
+cssyes colors text with [sugar](https://github.com/paintparty/sugar), so each base color adapts to the terminal's background. `:red` is a lighter red on a dark background, a darker red on a light background, and a medium red when the background is not detected. Colors are downsampled to the color level the terminal supports, and output has no color codes when the terminal supports none.
 
 ### Theme tokens
 
@@ -147,9 +149,30 @@ Both use medium-tone colors that read on light and dark backgrounds.
 
 ### Theme colors
 
-`:red`<br>`:orange`<br>`:yellow`<br>`:olive`<br>`:green`<br>`:cyan`<br>`:blue`<br>`:purple`<br>`:magenta`<br>`:gray`<br>`:black`<br>`:white`
+A token's color is any color that sugar's `:color` option takes.
+
+Base colors, which adapt to the terminal's background:
+
+`:red`<br>`:orange`<br>`:yellow`<br>`:olive`<br>`:green`<br>`:cyan`<br>`:blue`<br>`:purple`<br>`:magenta`<br>`:gray`
+
+`:black`, `:white`, fixed variants such as `:dark-blue` or `:soft-red`, hex strings such as `"#ff5f00"`, rgb vectors such as `[255 95 0]`, and 8-bit ids such as `202` do not adapt.
 
 `:neutral`, or a missing token, prints uncolored.
+
+View [sugar's color docs](https://github.com/paintparty/sugar/blob/main/doc/colors.md), which list every variant.
+
+### Color variants
+
+`:color-variant` puts the same variant on every base color in the theme, in place of the one sugar picks for the terminal's background. With `:extra-dark`, `:blue` becomes `:extra-dark-blue`.
+
+```clojure
+(print-css ".foo{color:red;}" {:theme         cssyes.themes/monokai-universal
+                               :color-variant :extra-dark})
+```
+
+It takes one of `:shadow`, `:extra-dark`, `:dark`, `:medium`, `:light`, `:extra-light` or `:highlight`. Any other value leaves the theme unchanged. `:black`, `:white`, fixed variants, hex, rgb and 8-bit colors are not changed.
+
+On a terminal with 256 colors, neighboring variants such as `:extra-dark` and `:shadow` can round to the same color.
 
 ### Custom theme example
 
@@ -180,9 +203,9 @@ Available dev tasks via `bb.edn`:
 bb test            # Clojure tests
 bb test:bb         # Babashka tests
 bb test:jolt       # Jolt tests
-bb test:cljs       # ClojureScript tests (run npm install first)
+bb test:cljs       # ClojureScript tests on Node (run npm install first)
 bb test:all        # all of the above
-bb visual          # print sample CSS in each preset theme
+bb test:visual     # print sample CSS in each preset theme and color variant
 bb ci              # run the tests and build the jar
 bb install         # install the jar to ~/.m2
 bb docs:readme     # after tagging a release: update the version numbers in this README

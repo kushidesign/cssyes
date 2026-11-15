@@ -1,7 +1,8 @@
 (ns cssyes.core 
   (:require
     [clojure.string :as str]
-    [cssyes.themes :as themes]))
+    [cssyes.themes :as themes]
+    [sugar.core :as sugar]))
 
 (declare beautify)
 
@@ -19,20 +20,56 @@
                 :theme       default-theme}
                opts)))))
 
+(def color-variants
+  "The values :color-variant takes. Each is a prefix of a sugar palette name,
+   such as :dark in :dark-blue."
+  #{:shadow :extra-dark :dark :medium :light :extra-light :highlight})
+
+(def ^:private variant-base-colors
+  "The sugar base colors that have variants. :black and :white have none."
+  #{"red" "orange" "yellow" "olive" "green" "cyan" "blue" "purple" "magenta"
+    "gray"})
+
+(defn- with-color-variant
+  "Returns theme with each base color prefixed by variant, so :blue becomes
+  :dark-blue for the variant :dark. Other colors are unchanged. Returns theme
+  unchanged when variant is not in color-variants.
+
+  Example:
+    (with-color-variant {:properties :blue :colons :black} :dark)
+    => {:properties :dark-blue :colons :black}"
+  [theme variant]
+  (if (contains? color-variants variant)
+    (reduce-kv (fn [m k color]
+                 (assoc m k (if (and (or (keyword? color) (string? color))
+                                     (contains? variant-base-colors (name color)))
+                              (keyword (str (name variant) "-" (name color)))
+                              color)))
+               {}
+               theme)
+    theme))
+
+(def ^:private ^:dynamic *supports-color*
+  "A supports-color :context map passed to sugar.core/styled, for mocking in
+   tests. nil reads the live process and terminal."
+  nil)
+
 (defn- colorize
-  "Applies an ANSI color code to a string based on a provided theme map.
-  Returns the original string if no matching theme or color is found.
+  "Colors a string with sugar.core/styled, using the color the theme map gives
+  for theme-key. A base color such as :red resolves to a lighter variant on a
+  dark terminal background and a darker one on a light background. Returns the
+  original string if the theme has no color for theme-key.
 
   Example:
     (colorize \"{\" :curly-brackets {:curly-brackets :blue})"
   [text theme-key theme]
   (if (or (empty? text) (nil? text))
     text
-    (let [color-kw  (get theme theme-key)
-          ansi-code (get themes/ansi-colors color-kw)]
-      (if ansi-code
-        (str ansi-code text (:reset themes/ansi-colors))
-        text))))
+    (if-let [color (get theme theme-key)]
+      (if *supports-color*
+        (sugar/styled text {:color color} *supports-color*)
+        (sugar/styled text {:color color}))
+      text)))
 
 (defn- make-indent
   "Generates a string of spaces for the given indentation level.
@@ -271,96 +308,105 @@
     :theme         - Map of syntax elements to color keywords
                      (e.g., :properties :blue, :numbers :orange).
                      Presets live in cssyes.themes
-                     (e.g., cssyes.themes/neutral-universal)
+                     (e.g., cssyes.themes/neutral)
+    :color-variant - One of cssyes.core/color-variants, such as :extra-dark.
+                     Prefixes each base color in the theme, so :blue becomes
+                     :extra-dark-blue, in place of the variant sugar picks
+                     for the terminal's background.
+    :supports-color - A supports-color :context map passed to
+                      sugar.core/styled, for mocking in tests
 
   Example:
     (beautify-css \".btn { color: red; }\" {:indentation 2})"
   [css-string & [opts]]
-  (let [ret (let [indent-spaces (:indentation opts 2)
-                  theme         (get opts :theme default-theme)
-                  align-vals?   (:align-values? opts true)
-                  tokens        (re-seq css-token-re css-string)]
-              (loop [toks        tokens
-                     indent      0
-                     chunk       []
-                     out         []
-                     align-stack [0]]
-                (if (empty? toks)
-                  (str (str/trim (str/join "" out)) "\n")
-                  (let [t         (first toks)
-                        next-toks (rest toks)]
-                    (cond
-                      ;; Format floating comments and maintain indentation levels
-                      (str/starts-with? t "/*")
-                      (recur next-toks
-                             indent
-                             []
-                             (conj out
-                                   (make-indent indent indent-spaces)
-                                   (colorize t :comments theme)
-                                   "\n")
-                             align-stack)
-
-                      ;; Enter a new block: format the selector and scan for max prop len
-                      (= t "{")
-                      (let [selector   (str/trim (str/join "" chunk))
-                            next-align (if align-vals?
-                                         (block-max-prop-length next-toks)
-                                         0)]
-                        (recur next-toks
-                               (inc indent)
-                               []
-                               (conj out
-                                     (make-indent indent indent-spaces)
-                                     (format-selector selector theme)
-                                     " "
-                                     (colorize "{" :curly-brackets theme)
-                                     "\n")
-                               (conj align-stack next-align)))
-
-                      ;; Exit a block: process remaining declarations and decrease indent
-                      (= t "}")
-                      (let [decl       (process-declaration chunk
-                                                            indent
-                                                            indent-spaces
-                                                            theme
-                                                            (peek align-stack))
-                            new-indent (max 0 (dec indent))
-                            new-stack  (if (next align-stack)
-                                         (pop align-stack)
-                                         [0])]
-                        (recur next-toks
-                               new-indent
-                               []
-                               (conj out
-                                     (if decl (str decl "\n") "")
-                                     (make-indent new-indent indent-spaces)
-                                     (colorize "}" :curly-brackets theme)
-                                     "\n")
-                               new-stack))
-
-                      ;; End of declaration: process property and value string
-                      (= t ";")
-                      (let [decl (process-declaration chunk
-                                                      indent
-                                                      indent-spaces
-                                                      theme
-                                                      (peek align-stack))]
+  (binding [*supports-color* (:supports-color opts)]
+    (let [ret (let [indent-spaces (:indentation opts 2)
+                    theme         (with-color-variant
+                                   (get opts :theme default-theme)
+                                   (:color-variant opts))
+                    align-vals?   (:align-values? opts true)
+                    tokens        (re-seq css-token-re css-string)]
+                (loop [toks        tokens
+                       indent      0
+                       chunk       []
+                       out         []
+                       align-stack [0]]
+                  (if (empty? toks)
+                    (str (str/trim (str/join "" out)) "\n")
+                    (let [t         (first toks)
+                          next-toks (rest toks)]
+                      (cond
+                        ;; Format floating comments and maintain indentation levels
+                        (str/starts-with? t "/*")
                         (recur next-toks
                                indent
                                []
                                (conj out
-                                     (if decl
-                                       (str decl (colorize ";" :semi-colons theme) "\n")
-                                       ""))
-                               align-stack))
+                                     (make-indent indent indent-spaces)
+                                     (colorize t :comments theme)
+                                     "\n")
+                               align-stack)
 
-                      ;; Accumulate text into the chunk until a structural token is hit
-                      :else
-                      (recur next-toks
-                             indent
-                             (conj chunk t)
-                             out
-                             align-stack))))))
-        ret (str/replace ret #"\n$" "")]
-    ret))
+                        ;; Enter a new block: format the selector and scan for max prop len
+                        (= t "{")
+                        (let [selector   (str/trim (str/join "" chunk))
+                              next-align (if align-vals?
+                                           (block-max-prop-length next-toks)
+                                           0)]
+                          (recur next-toks
+                                 (inc indent)
+                                 []
+                                 (conj out
+                                       (make-indent indent indent-spaces)
+                                       (format-selector selector theme)
+                                       " "
+                                       (colorize "{" :curly-brackets theme)
+                                       "\n")
+                                 (conj align-stack next-align)))
+
+                        ;; Exit a block: process remaining declarations and decrease indent
+                        (= t "}")
+                        (let [decl       (process-declaration chunk
+                                                              indent
+                                                              indent-spaces
+                                                              theme
+                                                              (peek align-stack))
+                              new-indent (max 0 (dec indent))
+                              new-stack  (if (next align-stack)
+                                           (pop align-stack)
+                                           [0])]
+                          (recur next-toks
+                                 new-indent
+                                 []
+                                 (conj out
+                                       (if decl (str decl "\n") "")
+                                       (make-indent new-indent indent-spaces)
+                                       (colorize "}" :curly-brackets theme)
+                                       "\n")
+                                 new-stack))
+
+                        ;; End of declaration: process property and value string
+                        (= t ";")
+                        (let [decl (process-declaration chunk
+                                                        indent
+                                                        indent-spaces
+                                                        theme
+                                                        (peek align-stack))]
+                          (recur next-toks
+                                 indent
+                                 []
+                                 (conj out
+                                       (if decl
+                                         (str decl (colorize ";" :semi-colons theme) "\n")
+                                         ""))
+                                 align-stack))
+
+                        ;; Accumulate text into the chunk until a structural token is hit
+                        :else
+                        (recur next-toks
+                               indent
+                               (conj chunk t)
+                               out
+                               align-stack))))))
+          ret (str/replace ret #"\n$" "")]
+      ret)))

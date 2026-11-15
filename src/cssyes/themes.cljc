@@ -1,55 +1,12 @@
 (ns cssyes.themes)
 
 ;; -----------------------------------------------------------------------------
-;; # ANSI colors
-;; -----------------------------------------------------------------------------
-
-(def ansi-colors-medium
-  "A map of color keywords to their corresponding 256-color ANSI escape codes.
-   Values match the medium-* entries of the Bling 8-bit palette. :neutral is
-   intentionally absent, so tokens themed :neutral print uncolored."
-  {:red     "\033[38;5;196m"
-   :orange  "\033[38;5;172m"
-   :yellow  "\033[38;5;178m"
-   :olive   "\033[38;5;106m"
-   :green   "\033[38;5;40m"
-   :cyan    "\033[38;5;42m"
-   :blue    "\033[38;5;39m"
-   :purple  "\033[38;5;141m"
-   :magenta "\033[38;5;201m"
-   :gray    "\033[38;5;247m"
-   :black   "\033[38;5;16m"
-   :white   "\033[38;5;231m"
-   :reset   "\033[0m"})
-
-(def ansi-colors-soft
-  "Lower-chroma alternative to ansi-colors-medium. Values match the soft-*
-   entries of the Bling 8-bit palette. The palette has no soft gray, so :gray,
-   :black, and :white are the same as in ansi-colors-medium."
-  {:red     "\033[38;5;173m"
-   :orange  "\033[38;5;136m"
-   :yellow  "\033[38;5;142m"
-   :olive   "\033[38;5;144m"
-   :green   "\033[38;5;108m"
-   :cyan    "\033[38;5;73m"
-   :blue    "\033[38;5;110m"
-   :purple  "\033[38;5;146m"
-   :magenta "\033[38;5;175m"
-   :gray    "\033[38;5;247m"
-   :black   "\033[38;5;16m"
-   :white   "\033[38;5;231m"
-   :reset   "\033[0m"})
-
-;; Toggle between ansi-colors-medium and ansi-colors-soft here.
-(def ansi-colors ansi-colors-medium)
-
-
-;; -----------------------------------------------------------------------------
 ;; # Themes
 ;; -----------------------------------------------------------------------------
 
-;; Universal themes use medium-tone colors that read on light and dark
-;; backgrounds.
+;; Theme values are sugar colors. sugar.core/styled resolves a base color such
+;; as :red to a lighter variant on a dark terminal background, a darker one on a
+;; light background, and a medium one when the background is not detected.
 
 (def monokai-universal
   {:selectors      :magenta
