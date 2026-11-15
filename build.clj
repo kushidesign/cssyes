@@ -3,7 +3,7 @@
             [babashka.deps-deploy :as dd]))
 
 (def lib 'design.kushi/cssyes)
-(def version "0.1.0-SNAPSHOT")
+(def version "0.1.0")
 #_ ; alternatively, use MAJOR.MINOR.COMMITS:
 (def version (format "1.0.%s" (b/git-count-revs nil)))
 (def class-dir "target/classes")

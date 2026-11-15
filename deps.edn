@@ -1,7 +1,6 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure        {:mvn/version "1.12.6"}
-        ;; The local checkout. Switch to {:mvn/version "0.1.0"} once sugar is published.
-        io.github.paintparty/sugar {:local/root "../../claude/sugar"}}
+        io.github.paintparty/sugar {:mvn/version "0.1.0"}}
  :aliases
  {:test
   {:extra-paths ["test"]
