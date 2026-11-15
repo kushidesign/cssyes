@@ -14,6 +14,7 @@
  :tasks
  {:requires
   [build
+   [tasks.clojars :as clojars]
    [tasks.docs :as docs]]
 
   test
@@ -60,6 +61,10 @@
                  (if (fs/which "with-clojars-creds")
                    (shell "with-clojars-creds" "bb" "-x" "build/deploy")
                    (exec 'build/deploy)))}
+
+  clojars-info
+  {:doc  "Print the latest release and the Clojars record for the lib in build.clj."
+   :task (clojars/info)}
 
   install
   {:doc     "Install the JAR locally (build via ci)."
