@@ -5,16 +5,21 @@
             [supports-color.core :as supports-color]))
 
 (def example-1-input
-".foo {
+  ".foo {
   &:link {
     color: silver;
   }
   &::before {
     content: \"cssyes\";
   }
+  /* media query */
   @media(min-width: 1280px) {
-    color: orange;
+    color: var(--my-color);
+    background: linear-gradient(black, white);
+    line-height: 1.2;
+    padding: 20px;
   }
+  /* feature support */
   @supports(color: color-mix(in oklch, red, red)) {
     color: blue;
   }
@@ -36,9 +41,14 @@
   \033[38;5;183m&\033[m\033[38;5;213m::\033[m\033[38;5;213mbefore\033[m \033[38;5;251m{\033[m
     \033[38;5;83mcontent\033[m\033[38;5;198m:\033[m \033[38;5;184m\"cssyes\"\033[m\033[38;5;251m;\033[m
   \033[38;5;251m}\033[m
+  \033[38;5;251m/* media query */\033[m
   \033[38;5;213m@\033[m\033[38;5;213mmedia\033[m\033[38;5;184m(\033[m\033[38;5;213mmin-width\033[m\033[38;5;213m:\033[m \033[38;5;213m1280px\033[m\033[38;5;184m)\033[m \033[38;5;251m{\033[m
-    \033[38;5;83mcolor\033[m\033[38;5;198m:\033[m \033[38;5;81morange\033[m\033[38;5;251m;\033[m
+    \033[38;5;83mcolor\033[m\033[38;5;198m:\033[m       \033[38;5;183mvar\033[m\033[38;5;184m(\033[m\033[38;5;81m--my-color\033[m\033[38;5;184m)\033[m\033[38;5;251m;\033[m
+    \033[38;5;83mbackground\033[m\033[38;5;198m:\033[m  \033[38;5;183mlinear-gradient\033[m\033[38;5;184m(\033[m\033[38;5;81mblack\033[m\033[38;5;198m,\033[m \033[38;5;81mwhite\033[m\033[38;5;184m)\033[m\033[38;5;251m;\033[m
+    \033[38;5;83mline-height\033[m\033[38;5;198m:\033[m \033[38;5;81m1.2\033[m\033[38;5;251m;\033[m
+    \033[38;5;83mpadding\033[m\033[38;5;198m:\033[m     \033[38;5;81m20px\033[m\033[38;5;251m;\033[m
   \033[38;5;251m}\033[m
+  \033[38;5;251m/* feature support */\033[m
   \033[38;5;213m@\033[m\033[38;5;213msupports\033[m\033[38;5;184m(\033[m\033[38;5;213mcolor\033[m\033[38;5;213m:\033[m \033[38;5;213mcolor-mix\033[m\033[38;5;184m(\033[m\033[38;5;213min\033[m \033[38;5;213moklch\033[m\033[38;5;198m,\033[m \033[38;5;213mred\033[m\033[38;5;198m,\033[m \033[38;5;213mred\033[m\033[38;5;184m)\033[m\033[38;5;184m)\033[m \033[38;5;251m{\033[m
     \033[38;5;83mcolor\033[m\033[38;5;198m:\033[m \033[38;5;81mblue\033[m\033[38;5;251m;\033[m
   \033[38;5;251m}\033[m
@@ -52,25 +62,61 @@
   \033[38;5;92m&\033[m\033[38;5;127m::\033[m\033[38;5;127mbefore\033[m \033[38;5;242m{\033[m
     \033[38;5;28mcontent\033[m\033[38;5;160m:\033[m \033[38;5;136m\"cssyes\"\033[m\033[38;5;242m;\033[m
   \033[38;5;242m}\033[m
+  \033[38;5;242m/* media query */\033[m
   \033[38;5;127m@\033[m\033[38;5;127mmedia\033[m\033[38;5;136m(\033[m\033[38;5;127mmin-width\033[m\033[38;5;127m:\033[m \033[38;5;127m1280px\033[m\033[38;5;136m)\033[m \033[38;5;242m{\033[m
-    \033[38;5;28mcolor\033[m\033[38;5;160m:\033[m \033[38;5;26morange\033[m\033[38;5;242m;\033[m
+    \033[38;5;28mcolor\033[m\033[38;5;160m:\033[m       \033[38;5;92mvar\033[m\033[38;5;136m(\033[m\033[38;5;26m--my-color\033[m\033[38;5;136m)\033[m\033[38;5;242m;\033[m
+    \033[38;5;28mbackground\033[m\033[38;5;160m:\033[m  \033[38;5;92mlinear-gradient\033[m\033[38;5;136m(\033[m\033[38;5;26mblack\033[m\033[38;5;160m,\033[m \033[38;5;26mwhite\033[m\033[38;5;136m)\033[m\033[38;5;242m;\033[m
+    \033[38;5;28mline-height\033[m\033[38;5;160m:\033[m \033[38;5;26m1.2\033[m\033[38;5;242m;\033[m
+    \033[38;5;28mpadding\033[m\033[38;5;160m:\033[m     \033[38;5;26m20px\033[m\033[38;5;242m;\033[m
   \033[38;5;242m}\033[m
+  \033[38;5;242m/* feature support */\033[m
   \033[38;5;127m@\033[m\033[38;5;127msupports\033[m\033[38;5;136m(\033[m\033[38;5;127mcolor\033[m\033[38;5;127m:\033[m \033[38;5;127mcolor-mix\033[m\033[38;5;136m(\033[m\033[38;5;127min\033[m \033[38;5;127moklch\033[m\033[38;5;160m,\033[m \033[38;5;127mred\033[m\033[38;5;160m,\033[m \033[38;5;127mred\033[m\033[38;5;136m)\033[m\033[38;5;136m)\033[m \033[38;5;242m{\033[m
     \033[38;5;28mcolor\033[m\033[38;5;160m:\033[m \033[38;5;26mblue\033[m\033[38;5;242m;\033[m
   \033[38;5;242m}\033[m
 \033[38;5;242m}\033[m")
 
 (deftest a-test
-  (testing "example-1-input, with cssyes.core/beautify and the monokai-universal theme, on a dark background."
+  (testing "example-1-input, with cssyes.core/beautify and the monokai theme, on a dark background."
     (is (= (sut/beautify example-1-input
-                         {:theme          themes/monokai-universal
+                         {:theme          themes/monokai
                           :supports-color (mock-context "dark")})
            example-1-ansi-tagged-output-dark)))
-  (testing "example-1-input, with cssyes.core/beautify and the monokai-universal theme, on a light background."
+  (testing "example-1-input, with cssyes.core/beautify and the monokai theme, on a light background."
     (is (= (sut/beautify example-1-input
-                         {:theme          themes/monokai-universal
+                         {:theme          themes/monokai
                           :supports-color (mock-context "light")})
            example-1-ansi-tagged-output-light))))
+
+(deftest default-theme-test
+  (testing "example-1-input, with cssyes.core/beautify and no :theme, uses the monokai theme."
+    (is (= (sut/beautify example-1-input
+                         {:supports-color (mock-context "dark")})
+           example-1-ansi-tagged-output-dark))
+    (is (= (sut/beautify example-1-input
+                         {:supports-color (mock-context "light")})
+           example-1-ansi-tagged-output-light))))
+
+(deftest comments-test
+  (let [opts {:theme          {:comments :red}
+              :supports-color (mock-context "dark")}]
+    (testing "A comment at the top level gets the :comments color."
+      (is (= (sut/beautify ".a { color: red; }\n/* between */\n.b { color: red; }" opts)
+             ".a {\n  color: red;\n}\n\033[38;5;198m/* between */\033[m\n.b {\n  color: red;\n}")))
+    (testing "A comment before a declaration goes on its own line and gets the :comments color."
+      (is (= (sut/beautify ".a { /* in block */ color: red; }" opts)
+             ".a {\n  \033[38;5;198m/* in block */\033[m\n  color: red;\n}")))
+    (testing "A comment after the last declaration goes on its own line and gets the :comments color."
+      (is (= (sut/beautify ".a { color: red; /* after decl */ }" opts)
+             ".a {\n  color: red;\n  \033[38;5;198m/* after decl */\033[m\n}")))
+    (testing "A comment inside a value stays in place and gets the :comments color."
+      (is (= (sut/beautify ".a { color: /* mid */ red; }" opts)
+             ".a {\n  color: \033[38;5;198m/* mid */\033[m red;\n}")))
+    (testing "A comment inside a selector stays in place and gets the :comments color."
+      (is (= (sut/beautify ".a /* sel */ { color: red; }" opts)
+             ".a \033[38;5;198m/* sel */\033[m {\n  color: red;\n}")))
+    (testing "A slash that does not start a comment stays part of the value."
+      (is (= (sut/beautify ".b { width: calc(1px / 2); }" opts)
+             ".b {\n  width: calc(1px / 2);\n}")))))
 
 (def ^:private variant-theme
   {:selectors      :blue

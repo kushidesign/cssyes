@@ -27,7 +27,7 @@
    :task        (exec 'cognitect.test-runner.api/test)}
 
   test:visual
-  {:doc         "Print the example CSS in each preset theme, and in monokai-universal with each color variant."
+  {:doc         "Print the example CSS in each preset theme, and in the default theme with each color variant."
    :extra-paths ["test"]
    :requires    ([cssyes.visual :as visual])
    :task        (visual/-main)}

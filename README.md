@@ -102,14 +102,14 @@ Output (without color):
 
 ```clojure
 (print-css ".foo{color:red;}")
-(print-css ".foo{color:red;}" {:theme cssyes.themes/monokai-universal})
+(print-css ".foo{color:red;}" {:theme cssyes.themes/neutral})
 ```
 
 ### Options
 
 | Key               | Default                 | Description                                                                              |
 | :---              | :---                    | :---                                                                                     |
-| `:theme`          | `cssyes.themes/neutral` | Map of token to color                                                                    |
+| `:theme`          | `cssyes.themes/monokai` | Map of token to color                                                                    |
 | `:color-variant`  | `nil`                   | Use one variant for every base color in the theme. See [Color variants](#color-variants) |
 | `:indentation`    | `2`                     | Spaces per nesting level                                                                 |
 | `:align-values?`  | `true`                  | Align (left-justify) values within a block                                               |
@@ -121,8 +121,8 @@ Output (without color):
 
 Presets in `cssyes.themes`:
 
-- `neutral`, the default. Colors only punctuation and comments, in gray.
-- `monokai-universal`
+- `monokai`, the default.
+- `neutral`, which colors only punctuation and comments, in gray.
 
 cssyes colors text with [sugar](https://github.com/paintparty/sugar), so each base color adapts to the terminal's background. `:red` is a lighter red on a dark background, a darker red on a light background, and a medium red when the background is not detected. Colors are downsampled to the color level the terminal supports, and output has no color codes when the terminal supports none.
 
@@ -166,7 +166,7 @@ View [sugar's color docs](https://github.com/paintparty/sugar/blob/main/doc/colo
 `:color-variant` puts the same variant on every base color in the theme, in place of the one sugar picks for the terminal's background. With `:extra-dark`, `:blue` becomes `:extra-dark-blue`.
 
 ```clojure
-(print-css ".foo{color:red;}" {:theme         cssyes.themes/monokai-universal
+(print-css ".foo{color:red;}" {:theme         cssyes.themes/monokai
                                :color-variant :extra-dark})
 ```
 

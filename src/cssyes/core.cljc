@@ -6,7 +6,7 @@
 
 (declare beautify)
 
-(def default-theme themes/neutral)
+(def default-theme themes/monokai)
 
 (defn print-css 
   "Themed printing with indentation. Returns nil."
@@ -80,13 +80,13 @@
   (apply str (repeat (* level spaces) " ")))
 
 (def ^:private css-token-re
-  #"(?is)/\*.*?\*/|url\([^)]+\)|'(?:\\'|[^'])*'|\"(?:\\\"|[^\"])*\"|[{};()]|[^{};()'\"]+")
+  #"(?is)/\*.*?\*/|url\([^)]+\)|'(?:\\'|[^'])*'|\"(?:\\\"|[^\"])*\"|[{};()]|(?:[^{};()'\"/]|/(?!\*))+")
 
 (def ^:private selector-token-re 
-  #"::|:|,|\(|\)|\s+|[a-zA-Z0-9_.-]+|.")
+  #"/\*[\s\S]*?\*/|::|:|,|\(|\)|\s+|[a-zA-Z0-9_.-]+|.")
 
 (def ^:private value-token-re
-  #"(?i)'(?:\\'|[^'])*'|\"(?:\\\"|[^\"])*\"|--[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+\(|#[a-zA-Z0-9]+|(?:\d*\.\d+|\d+)(?:[a-zA-Z]+|%)?|\(|\)|,|\s+|[a-zA-Z_-]+|.")
+  #"(?i)/\*[\s\S]*?\*/|'(?:\\'|[^'])*'|\"(?:\\\"|[^\"])*\"|--[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+\(|#[a-zA-Z0-9]+|(?:\d*\.\d+|\d+)(?:[a-zA-Z]+|%)?|\(|\)|,|\s+|[a-zA-Z_-]+|.")
 
 
 (defn- block-max-prop-length
@@ -151,6 +151,10 @@
     (->> tokens
          (map (fn [t]
                 (cond
+                  ;; Colorize comments inside the selector
+                  (str/starts-with? t "/*")
+                  (colorize t :comments theme)
+
                   ;; Colorize pseudo-classes and pseudo-elements
                   (or (= t ":") (= t "::"))
                   (colorize t :pseudo-colons theme)
@@ -200,6 +204,13 @@
             (if skip-space?
               (recur next-toks depth skip-space? out)
               (recur next-toks depth false (conj out t)))
+
+            ;; Colorize comments inside the value
+            (str/starts-with? t "/*")
+            (recur next-toks
+                   depth
+                   false
+                   (conj out (colorize t :comments theme)))
 
             ;; Colorize quoted strings
             (re-matches #"(?s)^(?:'.*'|\".*\")$" t)
@@ -308,7 +319,7 @@
     :theme         - Map of syntax elements to color keywords
                      (e.g., :properties :blue, :numbers :orange).
                      Presets live in cssyes.themes
-                     (e.g., cssyes.themes/neutral)
+                     (e.g., cssyes.themes/monokai)
     :color-variant - One of cssyes.core/color-variants, such as :extra-dark.
                      Prefixes each base color in the theme, so :blue becomes
                      :extra-dark-blue, in place of the variant sugar picks
@@ -337,7 +348,8 @@
                           next-toks (rest toks)]
                       (cond
                         ;; Format floating comments and maintain indentation levels
-                        (str/starts-with? t "/*")
+                        (and (str/starts-with? t "/*")
+                             (str/blank? (str/join "" chunk)))
                         (recur next-toks
                                indent
                                []

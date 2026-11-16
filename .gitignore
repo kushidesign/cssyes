@@ -31,3 +31,7 @@
 /target
 /node_modules
 /out
+
+# Fireworks inline-result cache
+.fireworks/results/
+.test-refresh.edn
