@@ -4,6 +4,9 @@ cssyes: CSS formatting and syntax highlighting for the terminal, in Clojure and 
 
 ## Unreleased
 
+## 0.2.0
+2026-11-16
+
 ### Changed
 - Rename `cssyes.themes/monokai-universal` to `cssyes.themes/monokai`.
 - Make `cssyes.themes/monokai` the default theme, in place of `cssyes.themes/neutral`.
@@ -13,6 +16,7 @@ cssyes: CSS formatting and syntax highlighting for the terminal, in Clojure and 
 
 
 ## 0.1.0
+2026-11-14
 
 ### Added
 - Initial commit.
