@@ -19,7 +19,6 @@
 <br>
 
 ![cssyes in a Babashka REPL](doc/graphics/screens/bbrepl-white.webp#gh-light-mode-only)
-![cssyes in a Babashka REPL](doc/graphics/screens/bbrepl.webp#gh-dark-mode-only)
 
 <br>
 
