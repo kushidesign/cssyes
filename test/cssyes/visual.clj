@@ -45,5 +45,3 @@
                          :background-color :subtle-blue})
     (println)
     (core/print-css example-1-input (update opts :theme (comp deref resolve)))))
-
-(-main)
