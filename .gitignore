@@ -35,3 +35,4 @@
 # Fireworks inline-result cache
 .fireworks/results/
 .test-refresh.edn
+doc/graphics/.DS_Store
