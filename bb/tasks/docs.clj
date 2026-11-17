@@ -1,5 +1,5 @@
 (ns tasks.docs
-  "Helpers for the docs:* tasks in bb.edn."
+  "Helpers for the docs:update task in bb.edn."
   (:require [babashka.fs :as fs]
             [babashka.process :as p]
             [clojure.string :as str]))
@@ -11,68 +11,67 @@
       :out
       str/trim))
 
-(defn- latest-tag []
-  (not-empty (sh "git describe --tags --abbrev=0")))
+(defn- version-key
+  "Sort key for a tag like v0.10.1: a vector of its numbers, or nil if the tag
+   is not a plain vN.N.N release."
+  [tag]
+  (when-let [[_ & nums] (re-find #"^v?(\d+)\.(\d+)\.(\d+)$" tag)]
+    (mapv parse-long nums)))
+
+(defn- latest-release
+  "The highest vN.N.N tag on the origin remote, as {:tag \"v0.3.0\" :sha \"...\"},
+   or nil if the remote has none. Asks the remote with `git ls-remote`, so tags
+   that were never fetched locally count. For an annotated tag the sha is the
+   commit it points at (the peeled ^{} entry)."
+  []
+  (let [shas (->> (str/split-lines (sh "git ls-remote --tags origin"))
+                  (keep #(re-find #"^(\w{40})\s+refs/tags/(\S+?)(\^\{\})?$" %))
+                  (reduce (fn [m [_ sha tag peeled]]
+                            (if (or peeled (not (contains? m tag)))
+                              (assoc m tag sha)
+                              m))
+                          {}))]
+    (when-let [tag (->> (keys shas)
+                        (filter version-key)
+                        (sort-by version-key)
+                        last)]
+      {:tag tag :sha (get shas tag)})))
 
 (defn- lib-name
   "The lib symbol from `(def lib '...)` in build.clj, as a string."
   []
   (second (re-find #"[(]def lib '(\S+)[)]" (slurp "build.clj"))))
 
-(defn- build-url
-  "The project URL inferred from build.clj: the first `[:url \"...\"]` entry
-   in the pom data, or else https://github.com/owner/repo from an
-   io.github.owner/repo lib name."
-  []
-  (or (second (re-find #"\[:url \"(https?://[^\"]+)\"\]" (slurp "build.clj")))
-      (when-let [[_ owner repo] (re-find #"^io[.]github[.]([^/]+)/(.+)$" (lib-name))]
-        (str "https://github.com/" owner "/" repo))))
+(defn- replace-in-file
+  "Applies each [pattern replacement] pair to the file at path. Returns true if
+   the contents changed."
+  [path pairs]
+  (let [before (slurp path)
+        after  (reduce (fn [s [re rep]] (str/replace s re rep)) before pairs)]
+    (when (not= before after) (spit path after))
+    (not= before after)))
 
-(defn- repo-url
-  "The repo URL from `git remote get-url origin`, or from build.clj when
-   there is no origin remote."
-  []
-  (if-let [remote (not-empty (sh "git remote get-url origin"))]
-    ;; git@github.com:owner/repo.git -> https://github.com/owner/repo
-    (-> remote
-        (str/replace #"^git@github[.]com:" "https://github.com/")
-        (str/replace #"[.]git$" ""))
-    (build-url)))
+(defn update-docs
+  "Updates README.md, and doc/git-deps.md if it exists, to the latest release
+   tag on the origin remote (v0.2.0 -> 0.2.0 for Maven versions). Searches each
+   file for these patterns and rewrites the value in place:
 
-(defn update-readme
-  "Updates the version numbers in README.md to match the latest tag
-   (v0.2.0 -> 0.2.0). Leaves README.md alone if there are no tags yet."
+     <lib> {:mvn/version \"...\"}
+     [<lib> \"...\"]
+     :git/tag \"...\"
+     :git/sha \"...\"
+
+   Leaves the files alone if the remote has no release tags."
   []
-  (if-let [tag (latest-tag)]
-    ;; Rewrites the deps.edn and Leiningen coordinates in the Setup section
+  (if-let [{:keys [tag sha]} (latest-release)]
     (let [version (str/replace tag #"^v" "")
-          q       (java.util.regex.Pattern/quote (lib-name))]
-      (spit "README.md"
-            (-> (slurp "README.md")
-                (str/replace (re-pattern (str "(" q " [{]:mvn/version \")[^\"]+(\"[}])"))
-                             (str "$1" version "$2"))
-                (str/replace (re-pattern (str "([\\[]" q " \")[^\"]+(\"[\\]])"))
-                             (str "$1" version "$2"))))
-      (println "Updated README.md to version" version))
-    (println "No tags yet, so README.md is unchanged. Rerun after tagging a release.")))
-
-(defn write-git-deps
-  "Regenerates the git deps doc at out-path (doc/git-deps.md, for example)
-   from bb/tasks/git-deps.template.md and the latest tag. Uses HEAD if there
-   are no tags yet."
-  [out-path]
-  (let [tag     (latest-tag)
-        sha     (sh "git rev-list -n 1" (or tag "HEAD"))
-        url     (repo-url)
-        project (last (str/split url #"/"))]
-    (fs/create-dirs (fs/parent out-path))
-    (spit out-path
-          (-> (slurp "bb/tasks/git-deps.template.md")
-              (str/replace "{{PROJECT}}" project)
-              (str/replace "{{LIB}}" (lib-name))
-              (str/replace "{{URL}}" (str "\"" url "\""))
-              (str/replace "{{TAG}}" (str "\"" (or tag "<no tag yet>") "\""))
-              (str/replace "{{SHA}}" (str "\"" sha "\""))))
-    (when-not tag
-      (println "No tags yet, so the SHA is from HEAD. Rerun after tagging a release."))
-    (println "Wrote" out-path "for" (or tag "HEAD") sha)))
+          q       (java.util.regex.Pattern/quote (lib-name))
+          pairs   [[(re-pattern (str "(" q " [{]:mvn/version \")[^\"]+(\"[}])")) (str "$1" version "$2")]
+                   [(re-pattern (str "([\\[]" q " \")[^\"]+(\"[\\]])")) (str "$1" version "$2")]
+                   [#"(:git/tag\s+\")[^\"]+(\")" (str "$1" tag "$2")]
+                   [#"(:git/sha\s+\")[^\"]+(\")" (str "$1" sha "$2")]]]
+      (println "Latest release on origin:" tag sha)
+      (doseq [path ["README.md" "doc/git-deps.md"]
+              :when (fs/exists? path)]
+        (println (if (replace-in-file path pairs) "Updated  " "Unchanged") path)))
+    (println "No release tags on origin, so the docs are unchanged. Push a tag, then rerun.")))

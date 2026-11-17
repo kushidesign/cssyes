@@ -21,7 +21,7 @@
 | Period | Stage | Release |
 |---|---|---|
 | 2026 Mar-Nov | Experimental | - |
-| 2026 Nov-present  | Alpha | 0.1.0 |
+| 2026 Nov-present  | Alpha | 0.3.0 |
 
 
 <br />
@@ -42,13 +42,13 @@ If using with Jolt, requires `v0.8.24` or higher
 
 Deps:
 ```clojure
-design.kushi/cssyes {:mvn/version "0.1.0"}
+design.kushi/cssyes {:mvn/version "0.3.0"}
 ```
 <br>
 
 Leiningen:
 ```clojure
-[design.kushi/cssyes "0.1.0"]
+[design.kushi/cssyes "0.3.0"]
 ```
 <br>
 
@@ -208,18 +208,14 @@ bb test:all        # all of the above
 bb test:visual     # print sample CSS in each preset theme and color variant
 bb ci              # run the tests and build the jar
 bb install         # install the jar to ~/.m2
-bb docs:readme     # after tagging a release: update the version numbers in this README
-bb docs:git-deps   # after tagging a release: regenerate doc/git-deps.md
+bb docs:update     # after pushing a release tag: update the versions in this README and doc/git-deps.md
 ```
 
 ### Updating docs after a release
 
-After tagging a release (for example `git tag v0.2.0`), run both docs tasks:
+After pushing a release tag (for example `git push origin v0.2.0`), run `bb docs:update`. It asks the origin remote for its highest `vN.N.N` tag, then searches this README and [doc/git-deps.md](doc/git-deps.md) for `:mvn/version`, `:git/tag` and `:git/sha` values and rewrites them in place.
 
-- `bb docs:readme` updates the version numbers in the Setup section of this README to match the tag.
-- `bb docs:git-deps` regenerates [doc/git-deps.md](doc/git-deps.md) from [bb/tasks/git-deps.template.md](bb/tasks/git-deps.template.md) with the tag and its commit SHA.
-
-Commit both files and push.
+Commit the changed files and push.
 
 <br>
 

@@ -16,8 +16,8 @@ you would use to specify cssyes as a git dependency.
 
 {:deps {design.kushi/cssyes
         {:git/url "https://github.com/kushidesign/cssyes"
-         :git/tag "<no tag yet>"
-         :git/sha ""}}}
+         :git/tag "v0.3.0"
+         :git/sha "241decfb1b80a6ac878dab992c7948da0218c5d1"}}}
 ```
 <br>
 
@@ -32,8 +32,8 @@ The `:git/tag` entry documents which release the SHA corresponds to.
 ```clojure
 design.kushi/cssyes
 {:git/url "https://github.com/kushidesign/cssyes"
- :git/tag "<no tag yet>"
- :git/sha ""}
+ :git/tag "v0.3.0"
+ :git/sha "241decfb1b80a6ac878dab992c7948da0218c5d1"}
 ```
 
 <br>
@@ -43,7 +43,7 @@ design.kushi/cssyes
 ```clojure
 design.kushi/cssyes
 {:git/url "https://github.com/kushidesign/cssyes"
- :git/sha ""}
+ :git/sha "241decfb1b80a6ac878dab992c7948da0218c5d1"}
 ```
 
 <br>
@@ -56,7 +56,7 @@ the `:git/url` and `:git/tag` entries:
 ```clojure
 design.kushi/cssyes
 {:git/url "https://github.com/kushidesign/cssyes"
- :git/tag "<no tag yet>"}
+ :git/tag "v0.3.0"}
 ```
 
 then run:

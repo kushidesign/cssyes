@@ -73,11 +73,6 @@
 
   ;; Docs
   ;; ---------------------------------------------------------------------------
-  docs:readme
-  {:doc  "Update the version numbers in README.md to match the latest tag (v0.2.0 -> 0.2.0). Leaves README.md alone if there are no tags yet."
-   :task (docs/update-readme)}
-
-  docs:git-deps
-  {:doc  "Regenerate doc/git-deps.md from the latest tag.
-          Uses HEAD if there are no tags yet."
-   :task (docs/write-git-deps "doc/git-deps.md")}}}
+  docs:update
+  {:doc  "Update README.md and doc/git-deps.md (if it exists) to the latest release tag on the origin remote: the Maven version, :git/tag and :git/sha. Leaves them alone if the remote has no release tags."
+   :task (docs/update-docs)}}}

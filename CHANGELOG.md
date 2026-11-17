@@ -5,7 +5,7 @@ cssyes: CSS formatting and syntax highlighting for the terminal, in Clojure and 
 ## Unreleased
 
 
-## 0.2.0
+## 0.3.0
 2026-11-16
 
 ### Changed
