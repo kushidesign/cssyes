@@ -35,7 +35,7 @@
                "FORCE_COLOR" "2"
                "CLITHEME"    polarity)})
 
-(def example-1-ansi-tagged-output-dark
+(def example-1-ansi-tagged-output-dark-monokai
   "\033[38;5;213m.foo\033[m \033[38;5;251m{\033[m
   \033[38;5;183m&\033[m\033[38;5;213m:\033[m\033[38;5;213mlink\033[m \033[38;5;251m{\033[m
     \033[38;5;83mcolor\033[m\033[38;5;198m:\033[m \033[38;5;81msilver\033[m\033[38;5;251m;\033[m
@@ -56,7 +56,7 @@
   \033[38;5;251m}\033[m
 \033[38;5;251m}\033[m")
 
-(def example-1-ansi-tagged-output-light
+(def example-1-ansi-tagged-output-light-monokai
   "\033[38;5;127m.foo\033[m \033[38;5;242m{\033[m
   \033[38;5;92m&\033[m\033[38;5;127m:\033[m\033[38;5;127mlink\033[m \033[38;5;242m{\033[m
     \033[38;5;28mcolor\033[m\033[38;5;160m:\033[m \033[38;5;26msilver\033[m\033[38;5;242m;\033[m
@@ -77,20 +77,62 @@
   \033[38;5;242m}\033[m
 \033[38;5;242m}\033[m")
 
+(def example-1-ansi-tagged-output-dark
+  ".foo \033[38;5;251m{\033[m
+  \033[38;5;184m&\033[m\033[38;5;184m:\033[mlink \033[38;5;251m{\033[m
+    \033[38;5;183mcolor\033[m\033[38;5;198m:\033[m \033[38;5;81msilver\033[m\033[38;5;251m;\033[m
+  \033[38;5;251m}\033[m
+  \033[38;5;184m&\033[m\033[38;5;184m::\033[mbefore \033[38;5;251m{\033[m
+    \033[38;5;183mcontent\033[m\033[38;5;198m:\033[m \033[38;5;83m\"cssyes\"\033[m\033[38;5;251m;\033[m
+  \033[38;5;251m}\033[m
+  \033[38;5;198m/* media query */\033[m
+  @media\033[38;5;184m(\033[mmin-width\033[38;5;184m:\033[m 1280px\033[38;5;184m)\033[m \033[38;5;251m{\033[m
+    \033[38;5;183mcolor\033[m\033[38;5;198m:\033[m       \033[38;5;184mvar\033[m\033[38;5;184m(\033[m\033[38;5;214m--my-color\033[m\033[38;5;184m)\033[m\033[38;5;251m;\033[m
+    \033[38;5;183mbackground\033[m\033[38;5;198m:\033[m  \033[38;5;184mlinear-gradient\033[m\033[38;5;184m(\033[m\033[38;5;81mblack\033[m\033[38;5;198m,\033[m \033[38;5;81mwhite\033[m\033[38;5;184m)\033[m\033[38;5;251m;\033[m
+    \033[38;5;183mline-height\033[m\033[38;5;198m:\033[m \033[38;5;81m1.2\033[m\033[38;5;251m;\033[m
+    \033[38;5;183mpadding\033[m\033[38;5;198m:\033[m     \033[38;5;81m20px\033[m\033[38;5;251m;\033[m
+  \033[38;5;251m}\033[m
+  \033[38;5;198m/* feature support */\033[m
+  @supports\033[38;5;184m(\033[mcolor\033[38;5;184m:\033[m color-mix\033[38;5;184m(\033[min oklch\033[38;5;198m,\033[m red\033[38;5;198m,\033[m red\033[38;5;184m)\033[m\033[38;5;184m)\033[m \033[38;5;251m{\033[m
+    \033[38;5;183mcolor\033[m\033[38;5;198m:\033[m \033[38;5;81mblue\033[m\033[38;5;251m;\033[m
+  \033[38;5;251m}\033[m
+\033[38;5;251m}\033[m")
+
+(def example-1-ansi-tagged-output-light
+  ".foo \033[38;5;242m{\033[m
+  \033[38;5;136m&\033[m\033[38;5;136m:\033[mlink \033[38;5;242m{\033[m
+    \033[38;5;92mcolor\033[m\033[38;5;160m:\033[m \033[38;5;26msilver\033[m\033[38;5;242m;\033[m
+  \033[38;5;242m}\033[m
+  \033[38;5;136m&\033[m\033[38;5;136m::\033[mbefore \033[38;5;242m{\033[m
+    \033[38;5;92mcontent\033[m\033[38;5;160m:\033[m \033[38;5;28m\"cssyes\"\033[m\033[38;5;242m;\033[m
+  \033[38;5;242m}\033[m
+  \033[38;5;160m/* media query */\033[m
+  @media\033[38;5;136m(\033[mmin-width\033[38;5;136m:\033[m 1280px\033[38;5;136m)\033[m \033[38;5;242m{\033[m
+    \033[38;5;92mcolor\033[m\033[38;5;160m:\033[m       \033[38;5;136mvar\033[m\033[38;5;136m(\033[m\033[38;5;166m--my-color\033[m\033[38;5;136m)\033[m\033[38;5;242m;\033[m
+    \033[38;5;92mbackground\033[m\033[38;5;160m:\033[m  \033[38;5;136mlinear-gradient\033[m\033[38;5;136m(\033[m\033[38;5;26mblack\033[m\033[38;5;160m,\033[m \033[38;5;26mwhite\033[m\033[38;5;136m)\033[m\033[38;5;242m;\033[m
+    \033[38;5;92mline-height\033[m\033[38;5;160m:\033[m \033[38;5;26m1.2\033[m\033[38;5;242m;\033[m
+    \033[38;5;92mpadding\033[m\033[38;5;160m:\033[m     \033[38;5;26m20px\033[m\033[38;5;242m;\033[m
+  \033[38;5;242m}\033[m
+  \033[38;5;160m/* feature support */\033[m
+  @supports\033[38;5;136m(\033[mcolor\033[38;5;136m:\033[m color-mix\033[38;5;136m(\033[min oklch\033[38;5;160m,\033[m red\033[38;5;160m,\033[m red\033[38;5;136m)\033[m\033[38;5;136m)\033[m \033[38;5;242m{\033[m
+    \033[38;5;92mcolor\033[m\033[38;5;160m:\033[m \033[38;5;26mblue\033[m\033[38;5;242m;\033[m
+  \033[38;5;242m}\033[m
+\033[38;5;242m}\033[m")
+
 (deftest a-test
   (testing "example-1-input, with cssyes.core/beautify and the monokai theme, on a dark background."
     (is (= (sut/beautify example-1-input
                          {:theme          themes/monokai
                           :supports-color (mock-context "dark")})
-           example-1-ansi-tagged-output-dark)))
+           example-1-ansi-tagged-output-dark-monokai)))
   (testing "example-1-input, with cssyes.core/beautify and the monokai theme, on a light background."
     (is (= (sut/beautify example-1-input
                          {:theme          themes/monokai
                           :supports-color (mock-context "light")})
-           example-1-ansi-tagged-output-light))))
+           example-1-ansi-tagged-output-light-monokai))))
 
 (deftest default-theme-test
-  (testing "example-1-input, with cssyes.core/beautify and no :theme, uses the monokai theme."
+  (testing "example-1-input, with cssyes.core/beautify and no :theme, uses the alabaster theme."
     (is (= (sut/beautify example-1-input
                          {:supports-color (mock-context "dark")})
            example-1-ansi-tagged-output-dark))

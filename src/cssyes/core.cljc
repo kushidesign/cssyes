@@ -6,7 +6,7 @@
 
 (declare beautify)
 
-(def default-theme themes/monokai)
+(def default-theme themes/alabaster)
 
 (defn print-css 
   "Themed printing with indentation. Returns nil."
@@ -315,7 +315,7 @@
 
   Options map supports:
     :indentation   - Number of spaces for each level (default: 2)
-    :align-values? - Left-justify values across the block (default: true)
+    :align-values  - Left-justify values across the block (default: true)
     :theme         - Map of syntax elements to color keywords
                      (e.g., :properties :blue, :numbers :orange).
                      Presets live in cssyes.themes
@@ -335,7 +335,7 @@
                     theme         (with-color-variant
                                    (get opts :theme default-theme)
                                    (:color-variant opts))
-                    align-vals?   (:align-values? opts true)
+                    align-vals?   (:align-values opts true)
                     tokens        (re-seq css-token-re css-string)]
                 (loop [toks        tokens
                        indent      0

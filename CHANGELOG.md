@@ -4,6 +4,14 @@ cssyes: CSS formatting and syntax highlighting for the terminal, in Clojure and 
 
 ## Unreleased
 
+
+## 0.2.0
+2026-11-16
+
+### Changed
+- Make `cssyes.themes/alabaster` the default theme, in place of `cssyes.themes/monokai`.
+- Rename the `:align-values?` option to `:align-values`.
+
 ## 0.2.0
 2026-11-16
 

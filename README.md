@@ -1,13 +1,10 @@
 # cssyes
 
-**Makes CSS nicer to look at in terminal environments.**  
+**Hi-fidelity printing for CSS in terminal environments.**  
 <sub>Works with Clojure, ClojureScript(Node), Babashka, and Jolt</sub>
 
 <br>
 
-
-
-<br>
 
 **[Setup]** &nbsp;•&nbsp; **[Usage]** &nbsp;•&nbsp; **[Themes]** &nbsp;•&nbsp; **[Developing]**
 
@@ -16,11 +13,8 @@
 [Themes]:      #themes
 [Developing]:  #developing
 
-<br>
-
 ![cssyes in a Babashka REPL](doc/graphics/screens/bbrepl-white-2.webp#gh-light-mode-only)
 
-<br>
 
 ## Development Status
 
@@ -32,15 +26,17 @@
 
 <br />
 
-## Setup
+## Requirements
 
 If using with Babashka, requires `v1.13.222` or higher
 
 If using with Jolt, requires `v0.8.24` or higher
 
-<br>
+<br />
 
-Add as a dependency to your project:
+## Setup
+
+### Add as a dependency to your project:
 
 <br>
 
@@ -106,12 +102,12 @@ Output (without color):
 
 ### Options
 
-| Key               | Default                 | Description                                                                              |
-| :---              | :---                    | :---                                                                                     |
-| `:theme`          | `cssyes.themes/monokai` | Map of token to color                                                                    |
-| `:color-variant`  | `nil`                   | Use one variant for every base color in the theme. See [Color variants](#color-variants) |
-| `:indentation`    | `2`                     | Spaces per nesting level                                                                 |
-| `:align-values?`  | `true`                  | Align (left-justify) values within a block                                               |
+| Key               | Default                   | Description                                                                              |
+| :---              | :---                      | :---                                                                                     |
+| `:theme`          | `cssyes.themes/alabaster` | Map of token to color                                                                    |
+| `:color-variant`  | `nil`                     | Use one variant for every base color in the theme. See [Color variants](#color-variants) |
+| `:indentation`    | `2`                       | Spaces per nesting level                                                                 |
+| `:align-values`   | `true`                    | Align (left-justify) values within a block                                               |
 | `:supports-color` | `nil`                   | A supports-color `:context` map, for mocking the terminal in tests                       |
 
 <br>
@@ -120,10 +116,12 @@ Output (without color):
 
 Presets in `cssyes.themes`:
 
-- `monokai`, the default.
-- `neutral`, which colors only punctuation and comments, in gray.
+- `monokai`
+- `alabaster`, the default.
+- `zenburn` 
+- `neutral`, black / white / gray.
 
-cssyes colors text with [sugar](https://github.com/paintparty/sugar), so each base color adapts to the terminal's background. `:red` is a lighter red on a dark background, a darker red on a light background, and a medium red when the background is not detected. Colors are downsampled to the color level the terminal supports, and output has no color codes when the terminal supports none.
+cssyes colors text with [sugar](https://github.com/paintparty/sugar), so each base color adapts to the terminal's background. `:red` is a lighter red on a dark background, a darker red on a light background, and a medium red when the background is not detected. Colors are downsampled to the color level the terminal supports, and output has ANSI SGR codes when the terminal supports none.
 
 ### Theme tokens
 
@@ -145,12 +143,11 @@ cssyes colors text with [sugar](https://github.com/paintparty/sugar), so each ba
 | `:semi-colons`    | `;`                                            |
 | `:comments`       | `/* ... */`                                    |
 
+<br>
 
 ### Theme colors
 
-A token's color is any color that sugar's `:color` option takes.
-
-Base colors, which adapt to the terminal's background:
+A token's color should be one of the following base colors, which adapt to the terminal's background:
 
 `:red`<br>`:orange`<br>`:yellow`<br>`:olive`<br>`:green`<br>`:cyan`<br>`:blue`<br>`:purple`<br>`:magenta`<br>`:gray`
 
@@ -159,6 +156,8 @@ Base colors, which adapt to the terminal's background:
 `:neutral`, or a missing token, prints uncolored.
 
 View [sugar's color docs](https://github.com/paintparty/sugar/blob/main/doc/colors.md), which list every variant.
+
+<br>
 
 ### Color variants
 
@@ -172,6 +171,8 @@ View [sugar's color docs](https://github.com/paintparty/sugar/blob/main/doc/colo
 It takes one of `:shadow`, `:extra-dark`, `:dark`, `:medium`, `:light`, `:extra-light` or `:highlight`. Any other value leaves the theme unchanged. `:black`, `:white`, fixed variants, hex, rgb and 8-bit colors are not changed.
 
 On a terminal with 256 colors, neighboring variants such as `:extra-dark` and `:shadow` can round to the same color.
+
+<br>
 
 ### Custom theme example
 
